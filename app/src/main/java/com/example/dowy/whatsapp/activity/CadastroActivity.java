@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.dowy.whatsapp.R;
 import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
+import com.example.dowy.whatsapp.helper.Base64Custom;
 import com.example.dowy.whatsapp.model.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -49,39 +50,46 @@ public class CadastroActivity extends AppCompatActivity {
         });
     }
 
-    public void efectuarCadastro(Usuario usuario) {
-            autenticacao.createUserWithEmailAndPassword(usuario.getEmail(), usuario.getSenha()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "Usuario cadastrado", Toast.LENGTH_SHORT).show();
-                        finish();
-
-                    } else {
-
-                        String excepcao = "";
-
-                        try {
-                            throw task.getException();
-                        } catch (FirebaseAuthWeakPasswordException e) {
-                            excepcao = "Digite uma senha mais forte!";
-                        } catch (FirebaseAuthInvalidCredentialsException e) {
-                            excepcao = "Digite um E-mail valido!";
-                        } catch (FirebaseAuthUserCollisionException e) {
-                            excepcao = "Esta conta ja foi cadastrada!";
-                        } catch (Exception e) {
-                            excepcao = "Erro ao Cadastrar Usuario: " + e.getMessage();
-                            e.printStackTrace();
-                        }
-                        Toast.makeText(getApplicationContext(), excepcao, Toast.LENGTH_SHORT).show();
+    public void efectuarCadastro(final Usuario usuario) {
+        autenticacao.createUserWithEmailAndPassword(usuario.getEmail(), usuario.getSenha()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    try {
+                        String identificadorUsuario = Base64Custom.codificarBase64(usuario.getEmail());
+                        usuario.setId(identificadorUsuario);
+                        usuario.salvar();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+                    Toast.makeText(getApplicationContext(), "Usuario cadastrado", Toast.LENGTH_SHORT).show();
+                    finish();
+
+                } else {
+
+                    String excepcao = "";
+
+                    try {
+                        throw task.getException();
+                    } catch (FirebaseAuthWeakPasswordException e) {
+                        excepcao = "Digite uma senha mais forte!";
+                    } catch (FirebaseAuthInvalidCredentialsException e) {
+                        excepcao = "Digite um E-mail valido!";
+                    } catch (FirebaseAuthUserCollisionException e) {
+                        excepcao = "Esta conta ja foi cadastrada!";
+                    } catch (Exception e) {
+                        excepcao = "Erro ao Cadastrar Usuario: " + e.getMessage();
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(getApplicationContext(), excepcao, Toast.LENGTH_SHORT).show();
                 }
-            }).addOnFailureListener(this, new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.i("CADASTRO", "Falha ao Registar Usuario: " + e.getMessage());
-                }
-            });
+            }
+        }).addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("CADASTRO", "Falha ao Registar Usuario: " + e.getMessage());
+            }
+        });
 
     }
 
@@ -95,7 +103,7 @@ public class CadastroActivity extends AppCompatActivity {
         if (!nome.isEmpty()) {
             if (!email.isEmpty()) {
                 if (!senha.isEmpty()) {
-                   Usuario usuario = new Usuario();
+                    Usuario usuario = new Usuario();
                     usuario.setNome(nome);
                     usuario.setEmail(email);
                     usuario.setSenha(senha);
