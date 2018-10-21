@@ -80,7 +80,7 @@
         android:layout_marginRight="32dp"
         android:layout_marginBottom="8dp"
         android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/botaoLogin"
+        app:layout_constraintBottom_toTopOf="@+id/botaoCadastro"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +95,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:id="@+id/botaoLogin"
+        android:id="@+id/botaoCadastro"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
