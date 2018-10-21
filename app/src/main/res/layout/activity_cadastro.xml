@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".CadastroActivity"
+    tools:context=".activity.CadastroActivity"
     tools:layout_editor_absoluteY="25dp">
 
     <ImageView
@@ -40,14 +40,16 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView">
 
         <android.support.design.widget.TextInputEditText
+            android:id="@+id/cadastroNome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Digite o seu nome" />
+            android:hint="Digite o seu nome"
+            android:inputType="textCapWords|textPersonName" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayout"
-        android:layout_width="320dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
@@ -61,6 +63,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
 
         <android.support.design.widget.TextInputEditText
+            android:id="@+id/cadastroMail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Digite seu e-mail"
@@ -69,7 +72,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayout2"
-        android:layout_width="320dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
@@ -77,13 +80,14 @@
         android:layout_marginRight="32dp"
         android:layout_marginBottom="8dp"
         android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/botaoLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
 
         <android.support.design.widget.TextInputEditText
+            android:id="@+id/cadastroSenha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Digite sua senha"
@@ -91,8 +95,8 @@
     </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:id="@+id/button"
-        android:layout_width="320dp"
+        android:id="@+id/botaoLogin"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
