@@ -32,6 +32,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.4'
     implementation 'com.google.firebase:firebase-auth:16.0.5'
     implementation 'com.google.firebase:firebase-database:16.0.3'
+    implementation 'com.google.firebase:firebase-storage:16.0.3'
 
     //Dependency to Round Images
     implementation 'de.hdodenhof:circleimageview:2.2.0'

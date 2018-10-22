@@ -15,9 +15,21 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.dowy.whatsapp.R;
+import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
+import com.example.dowy.whatsapp.helper.Base64Custom;
 import com.example.dowy.whatsapp.helper.Permissao;
+import com.example.dowy.whatsapp.helper.UsuarioFirebase;
+import com.example.dowy.whatsapp.model.Usuario;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -30,11 +42,14 @@ public class ConfiguracoesActivity extends AppCompatActivity {
     private static final int SELECAO_CAMERA = 100;
     private static final int SELECAO_GALERIA = 200;
     private CircleImageView fotoDePerfil;
+    private StorageReference storageReference = ConfiguracaoFirebase.getFirebaseStorage(); ;
+    private String identificadorUsuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configuracoes);
+        identificadorUsuario = UsuarioFirebase.getIdentificadorUsuario();
 
         Permissao.validarPermissoes(permissoesNecessarias, this, 1);
         camera = findViewById(R.id.imageButtonCamera);
@@ -97,6 +112,29 @@ public class ConfiguracoesActivity extends AppCompatActivity {
 
             if (imagem != null) {
                 fotoDePerfil.setImageBitmap(imagem);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                imagem.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+                byte[] dadosImagem = baos.toByteArray();
+
+                //Salvar imagem no firebase
+                StorageReference imagemRef = storageReference
+                        .child("imagens")
+                        .child("perfil")
+                        .child(identificadorUsuario+".jpeg");
+
+                UploadTask uploadTask = imagemRef.putBytes(dadosImagem);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), "Erro ao fazer upload da imagem!", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(getApplicationContext(), "Sucesso ao fazer upload da imagem!", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
         }
