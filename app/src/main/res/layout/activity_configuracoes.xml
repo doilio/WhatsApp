@@ -75,8 +75,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="Introduza o seu nome" />
+            android:hint="Introduza o seu nome"
+            android:inputType="textPersonName" />
 
         <ImageView
             android:id="@+id/imageView3"
@@ -85,5 +85,30 @@
             android:layout_gravity="center_vertical"
             app:srcCompat="@drawable/ic_edit_green_24dp" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/imageButtonCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/roundFotoDePerfil"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonGallery"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/roundFotoDePerfil"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ic_photo_camera_cinza_24dp" />
+
+    <ImageButton
+        android:id="@+id/imageButtonGallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/roundFotoDePerfil"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonCamera"
+        app:layout_constraintTop_toTopOf="@+id/roundFotoDePerfil"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ic_photo_cinza_24dp" />
 
 </android.support.constraint.ConstraintLayout>

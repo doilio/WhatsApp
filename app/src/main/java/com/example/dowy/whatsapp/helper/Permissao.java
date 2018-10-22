@@ -23,12 +23,12 @@ public class Permissao {
             }
 
             //Caso a lista Esteja vazia nao E necessario solicitar permissao
-            if (listaPermissoes.isEmpty()) {
+            if (listaPermissoes.isEmpty()) return true;
                 String [] novasPermissoes = new String[listaPermissoes.size()];
                 listaPermissoes.toArray(novasPermissoes);
                 //Solicita Permissao
                 ActivityCompat.requestPermissions(activity,novasPermissoes,requestCode);
-            }
+
         }
         return true;
     }

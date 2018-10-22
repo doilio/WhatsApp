@@ -62,10 +62,10 @@ public class LoginActivity extends AppCompatActivity {
                 usuario.setSenha(senha);
                 logarUsuario(usuario);
             } else {
-                Toast.makeText(this, "Insira E-mail!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Insira Senha!", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(this, "Insira Senha!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Insira E-mail!", Toast.LENGTH_SHORT).show();
         }
     }
 
