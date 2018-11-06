@@ -17,19 +17,25 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.dowy.whatsapp.R;
 import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
 import com.example.dowy.whatsapp.helper.Base64Custom;
 import com.example.dowy.whatsapp.helper.Permissao;
 import com.example.dowy.whatsapp.helper.UsuarioFirebase;
 import com.example.dowy.whatsapp.model.Usuario;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -42,7 +48,7 @@ public class ConfiguracoesActivity extends AppCompatActivity {
     private static final int SELECAO_CAMERA = 100;
     private static final int SELECAO_GALERIA = 200;
     private CircleImageView fotoDePerfil;
-    private StorageReference storageReference = ConfiguracaoFirebase.getFirebaseStorage(); ;
+    private StorageReference storageReference = ConfiguracaoFirebase.getFirebaseStorage();
     private String identificadorUsuario;
 
     @Override
@@ -61,6 +67,18 @@ public class ConfiguracoesActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //Recuperar Dados do Usuario
+        FirebaseUser usuario = UsuarioFirebase.getUsuarioActual();
+        Uri url = usuario.getPhotoUrl();
+        if (url != null) {
+            Glide.with(ConfiguracoesActivity.this)
+                    .load(url)
+                    .into(fotoDePerfil);
+        } else {
+            //Se nao tivermos imagem uploaded, ele exibe uma imagem padrao
+            fotoDePerfil.setImageResource(R.drawable.padrao);
+        }
 
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,26 +136,42 @@ public class ConfiguracoesActivity extends AppCompatActivity {
                 byte[] dadosImagem = baos.toByteArray();
 
                 //Salvar imagem no firebase
-                StorageReference imagemRef = storageReference
+                final StorageReference imagemRef = storageReference
                         .child("imagens")
                         .child("perfil")
-                        .child(identificadorUsuario+".jpeg");
+                        .child(identificadorUsuario + ".jpeg");
 
                 UploadTask uploadTask = imagemRef.putBytes(dadosImagem);
-                uploadTask.addOnFailureListener(new OnFailureListener() {
+
+               uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Erro ao fazer upload da imagem!", Toast.LENGTH_SHORT).show();
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        //Continue with the task to get the download URL
+                        return imagemRef.getDownloadUrl();
                     }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(getApplicationContext(), "Sucesso ao fazer upload da imagem!", Toast.LENGTH_SHORT).show();
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), "Sucesso ao fazer upload da imagem!", Toast.LENGTH_SHORT).show();
+                            Uri downloadUri = task.getResult();
+                            actualizaFotoUsuario(downloadUri);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Erro ao fazer upload da imagem!" + task.getException(), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
+
             }
 
         }
+    }
+
+    public void actualizaFotoUsuario(Uri url) {
+        UsuarioFirebase.actualizarFotoUsuario(url);
     }
 
     @Override

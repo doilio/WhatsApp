@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbarPrincipal);
-        toolbar.setTitle("WhatsApp");
+        toolbar.setTitle("JessieApp");
         setSupportActionBar(toolbar);
 
         tabLayout = findViewById(R.id.tabLayoutPrincipal);
