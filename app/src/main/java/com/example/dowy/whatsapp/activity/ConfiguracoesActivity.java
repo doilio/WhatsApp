@@ -14,28 +14,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.dowy.whatsapp.R;
 import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
-import com.example.dowy.whatsapp.helper.Base64Custom;
 import com.example.dowy.whatsapp.helper.Permissao;
 import com.example.dowy.whatsapp.helper.UsuarioFirebase;
 import com.example.dowy.whatsapp.model.Usuario;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.net.URI;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -50,17 +47,23 @@ public class ConfiguracoesActivity extends AppCompatActivity {
     private CircleImageView fotoDePerfil;
     private StorageReference storageReference = ConfiguracaoFirebase.getFirebaseStorage();
     private String identificadorUsuario;
+    private EditText editPerfilNome;
+    private ImageView nomePerfilBotao;
+    private Usuario usuarioLogado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configuracoes);
         identificadorUsuario = UsuarioFirebase.getIdentificadorUsuario();
+        usuarioLogado = UsuarioFirebase.getDadosUsuarioLogado();
 
         Permissao.validarPermissoes(permissoesNecessarias, this, 1);
         camera = findViewById(R.id.imageButtonCamera);
         galeria = findViewById(R.id.imageButtonGallery);
         fotoDePerfil = findViewById(R.id.roundFotoDePerfil);
+        editPerfilNome = findViewById(R.id.editPerfilNome);
+        nomePerfilBotao = findViewById(R.id.nomePerfilBotao);
 
         toolbar = findViewById(R.id.toolbarPrincipal);
         toolbar.setTitle("Configuracoes");
@@ -79,6 +82,22 @@ public class ConfiguracoesActivity extends AppCompatActivity {
             //Se nao tivermos imagem uploaded, ele exibe uma imagem padrao
             fotoDePerfil.setImageResource(R.drawable.padrao);
         }
+
+        editPerfilNome.setText(usuario.getDisplayName());
+
+        nomePerfilBotao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nome = editPerfilNome.getText().toString().trim();
+                boolean retorno = UsuarioFirebase.actualizarNomeUsuario(nome);
+                if (retorno) {
+
+                    usuarioLogado.setNome(nome);
+                    usuarioLogado.actualizar();
+                    Toast.makeText(ConfiguracoesActivity.this, "Nome Actualizado com sucesso", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +162,7 @@ public class ConfiguracoesActivity extends AppCompatActivity {
 
                 UploadTask uploadTask = imagemRef.putBytes(dadosImagem);
 
-               uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                     @Override
                     public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                         if (!task.isSuccessful()) {
@@ -171,7 +190,13 @@ public class ConfiguracoesActivity extends AppCompatActivity {
     }
 
     public void actualizaFotoUsuario(Uri url) {
-        UsuarioFirebase.actualizarFotoUsuario(url);
+        boolean retorno = UsuarioFirebase.actualizarFotoUsuario(url);
+        if (retorno) {
+            usuarioLogado.setFoto(url.toString());
+            usuarioLogado.actualizar();
+        }
+        Toast.makeText(ConfiguracoesActivity.this, "Foto Alterada", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override

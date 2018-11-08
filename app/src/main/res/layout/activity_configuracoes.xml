@@ -71,7 +71,7 @@
         app:layout_constraintTop_toBottomOf="@+id/roundFotoDePerfil">
 
         <EditText
-            android:id="@+id/editText"
+            android:id="@+id/editPerfilNome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -80,7 +80,7 @@
             android:inputType="textPersonName" />
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/nomePerfilBotao"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
