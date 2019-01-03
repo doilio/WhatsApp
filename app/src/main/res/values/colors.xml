@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#054D44</color>
     <color name="colorAccent">#25D366</color>
     <color name="cinza_claro">#eeeeee</color>
+
+    <color name="balaoRemetente">#dbf9c4</color>
 </resources>

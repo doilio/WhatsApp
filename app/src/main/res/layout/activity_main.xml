@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activity.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbarPrincipal"
-        android:layout_alignParentTop="true"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    <include layout="@layout/toolbar"/>
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tabLayoutPrincipal"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:layout_below="@id/toolbarPrincipal"
         android:background="@color/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:tabIndicatorColor="@android:color/white"
@@ -28,6 +21,5 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPagerPrincipal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/tabLayoutPrincipal"/>
-</RelativeLayout>
+        android:layout_height="match_parent"/>
+</LinearLayout>
