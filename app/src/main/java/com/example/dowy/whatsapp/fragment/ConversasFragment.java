@@ -130,7 +130,6 @@ public class ConversasFragment extends Fragment {
         recyclerViewConversas.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-
     }
 
     public void recuperarConversas() {
