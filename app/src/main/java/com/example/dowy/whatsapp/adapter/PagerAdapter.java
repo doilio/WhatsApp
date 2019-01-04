@@ -20,7 +20,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new ConversasFragment();
+                return new  ConversasFragment();
             case 1:
                 return new ContactosFragment();
 

@@ -41,5 +41,9 @@ dependencies {
     // Material Search view
 
     implementation 'com.miguelcatalan:materialsearchview:1.4.0'
+
+    // Smart Tabs
+    implementation 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
+    implementation 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
 }
 apply plugin: 'com.google.gms.google-services'

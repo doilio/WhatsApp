@@ -13,17 +13,21 @@ import android.view.MenuItem;
 import com.example.dowy.whatsapp.R;
 import com.example.dowy.whatsapp.adapter.PagerAdapter;
 import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
+import com.example.dowy.whatsapp.fragment.ContactosFragment;
 import com.example.dowy.whatsapp.fragment.ConversasFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth autenticacao = ConfiguracaoFirebase.getFirebaseAuth();
-    private TabLayout tabLayout;
+    //private TabLayout tabLayout;
     private MaterialSearchView searchView;
     private ViewPager viewPager;
-    private PagerAdapter adapter;
+    //private PagerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,35 +39,49 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle("WhatsApp");
         setSupportActionBar(toolbar);
 
-        tabLayout = findViewById(R.id.tabLayoutPrincipal);
+        // Configurar abas
+        final FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+                getSupportFragmentManager(),
+                FragmentPagerItems.with(this)
+                .add("Conversas",ConversasFragment.class)
+                .add("Contactos", ContactosFragment.class)
+                .create());
+
         viewPager = findViewById(R.id.viewPagerPrincipal);
-
-        tabLayout.addTab(tabLayout.newTab().setText("Conversas"));
-        tabLayout.addTab(tabLayout.newTab().setText("Contactos"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-
-        adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-
         viewPager.setAdapter(adapter);
 
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
+        SmartTabLayout viewPagerTab = findViewById(R.id.viewPagerTab);
+        viewPagerTab.setViewPager(viewPager);
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
+        // tabLayout = findViewById(R.id.tabLayoutPrincipal);
+       // viewPager = findViewById(R.id.viewPagerPrincipal);
 
-            }
+        //tabLayout.addTab(tabLayout.newTab().setText("Conversas"));
+        //tabLayout.addTab(tabLayout.newTab().setText("Contactos"));
+        //tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
 
-            }
-        });
+        //adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+
+        //viewPager.setAdapter(adapter);
+
+//        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                viewPager.setCurrentItem(tab.getPosition());
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
 
         // Configuracao do search view
         searchView = findViewById(R.id.materialSearchPrincipal);
@@ -77,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 //Log.d("evento", "onQueryTextChange");
-                ConversasFragment fragment = (ConversasFragment) adapter.getItem(0);
+                ConversasFragment fragment = (ConversasFragment) adapter.getPage(0);
                 if (newText != null && !newText.isEmpty()) {
                     fragment.pesquisarConversa(newText);
                 }
