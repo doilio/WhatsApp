@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
         final FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(),
                 FragmentPagerItems.with(this)
-                .add("Conversas",ConversasFragment.class)
-                .add("Contactos", ContactosFragment.class)
-                .create());
+                        .add("Conversas", ConversasFragment.class)
+                        .add("Contactos", ContactosFragment.class)
+                        .create());
 
         viewPager = findViewById(R.id.viewPagerPrincipal);
         viewPager.setAdapter(adapter);
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         viewPagerTab.setViewPager(viewPager);
 
         // tabLayout = findViewById(R.id.tabLayoutPrincipal);
-       // viewPager = findViewById(R.id.viewPagerPrincipal);
+        // viewPager = findViewById(R.id.viewPagerPrincipal);
 
         //tabLayout.addTab(tabLayout.newTab().setText("Conversas"));
         //tabLayout.addTab(tabLayout.newTab().setText("Contactos"));
@@ -83,8 +83,26 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        // Configuracao do search view
+
+        // Configuracao Listener para o search view
         searchView = findViewById(R.id.materialSearchPrincipal);
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+
+                ConversasFragment fragment = (ConversasFragment) adapter.getPage(0);
+                fragment.recarregarConversas();
+            }
+        });
+
+
+        // Listener para search Box
+
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -97,9 +115,9 @@ public class MainActivity extends AppCompatActivity {
                 //Log.d("evento", "onQueryTextChange");
                 ConversasFragment fragment = (ConversasFragment) adapter.getPage(0);
                 if (newText != null && !newText.isEmpty()) {
-                    fragment.pesquisarConversa(newText);
+                    fragment.pesquisarConversa(newText.toLowerCase());
                 }
-                return false;
+                return true;
             }
 
         });

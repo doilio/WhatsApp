@@ -39,6 +39,7 @@ public class ConversasFragment extends Fragment {
     private RecyclerView recyclerViewConversas;
     private List<Conversa> listaConversas = new ArrayList<>();
     private ConversasAdapter adapter;
+    private DatabaseReference database;
     private DatabaseReference conversasRef;
     private ChildEventListener childEventListenerConversas;
     //private ValueEventListener valueEventListenerConversas;
@@ -119,8 +120,8 @@ public class ConversasFragment extends Fragment {
         List<Conversa> listaConversaBusca = new ArrayList<>();
         for (Conversa conversa : listaConversas) {
             Log.d("tamanho pesq.", String.valueOf(listaConversas.size()));
-            String nome = conversa.getUsuarioExibicao().getNome();
-            String ultimaMsg = conversa.getUltimaMensagem();
+            String nome = conversa.getUsuarioExibicao().getNome().toLowerCase();
+            String ultimaMsg = conversa.getUltimaMensagem().toLowerCase();
 
             if (nome.contains(texto) || ultimaMsg.contains(texto)) {
                 listaConversaBusca.add(conversa);
@@ -132,10 +133,16 @@ public class ConversasFragment extends Fragment {
 
     }
 
+    public void recarregarConversas() {
+        adapter = new ConversasAdapter(listaConversas, getActivity());
+        recyclerViewConversas.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
     public void recuperarConversas() {
 
         String identificadorUsuario = UsuarioFirebase.getIdentificadorUsuario();
-        DatabaseReference database = ConfiguracaoFirebase.getFirebaseDatabase();
+        database = ConfiguracaoFirebase.getFirebaseDatabase();
         conversasRef = database.child("conversas")
                 .child(identificadorUsuario);
 
