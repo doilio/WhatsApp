@@ -11,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.example.dowy.whatsapp.R;
 import com.example.dowy.whatsapp.activity.ChatActivity;
+import com.example.dowy.whatsapp.activity.GrupoActivity;
 import com.example.dowy.whatsapp.adapter.ContactosAdapter;
 import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
 import com.example.dowy.whatsapp.helper.RecyclerItemClickListener;
@@ -69,9 +71,16 @@ public class ContactosFragment extends Fragment {
             public void onItemClick(View view, int position) {
 
                 Usuario usuarioSelecionado = listaContactos.get(position);
-                Intent i = new Intent(getActivity(), ChatActivity.class);
-                i.putExtra("chatContacto", usuarioSelecionado);
-                startActivity(i);
+                boolean cabecalho = usuarioSelecionado.getEmail().isEmpty();
+                if (cabecalho) {
+                    Intent i = new Intent(getActivity(), GrupoActivity.class);
+                    startActivity(i);
+                } else {
+                    Intent i = new Intent(getActivity(), ChatActivity.class);
+                    i.putExtra("chatContacto", usuarioSelecionado);
+                    startActivity(i);
+                }
+
             }
 
             @Override
@@ -91,7 +100,6 @@ public class ContactosFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        listaContactos.clear();
         recuperarContactos();
     }
 
@@ -102,9 +110,17 @@ public class ContactosFragment extends Fragment {
     }
 
     public void recuperarContactos() {
+        listaContactos.clear();
+
+        Usuario itemGrupo = new Usuario();
+        itemGrupo.setNome("Novo Grupo");
+        itemGrupo.setEmail("");
+
+        listaContactos.add(itemGrupo);
         valueEventListenerContactos = usuariosRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //listaContactos.clear();
                 for (DataSnapshot dados : dataSnapshot.getChildren()) {
                     Usuario usuario = dados.getValue(Usuario.class);
                     String emailUsuarioActual = usuarioActual.getEmail();
