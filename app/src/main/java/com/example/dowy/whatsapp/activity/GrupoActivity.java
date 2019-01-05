@@ -1,5 +1,6 @@
 package com.example.dowy.whatsapp.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,12 +42,8 @@ public class GrupoActivity extends AppCompatActivity {
     private DatabaseReference usuarioRef;
     private FirebaseUser usuarioActual;
     private Toolbar toolbar;
+    private FloatingActionButton fabAvancarCadastro;
 
-    public void actualizarMembrosToolbar() {
-        int totalSelecionados = listaMembrosSelecionados.size();
-        int total = listaMembros.size()+ totalSelecionados;
-        toolbar.setSubtitle(totalSelecionados + " de " + total + " selecionados");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +53,13 @@ public class GrupoActivity extends AppCompatActivity {
         toolbar.setTitle("Novo grupo");
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         // Configuracoes iniciais
         recyclerMembros = findViewById(R.id.recyclerMembros);
         recyclerMembrosSelecionados = findViewById(R.id.recyclerMembrosSelecionados);
+        fabAvancarCadastro = findViewById(R.id.fabAvancarCadastro);
 
         usuarioRef = ConfiguracaoFirebase.getFirebaseDatabase().child("usuarios");
         usuarioActual = UsuarioFirebase.getUsuarioActual();
@@ -149,6 +140,15 @@ public class GrupoActivity extends AppCompatActivity {
                     }
                 }));
 
+        fabAvancarCadastro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(GrupoActivity.this, CadastroGrupoActivity.class);
+                i.putExtra("membros", (Serializable) listaMembrosSelecionados);
+                startActivity(i);
+            }
+        });
+
     }
 
     public void recuperarContactos() {
@@ -175,6 +175,12 @@ public class GrupoActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void actualizarMembrosToolbar() {
+        int totalSelecionados = listaMembrosSelecionados.size();
+        int total = listaMembros.size() + totalSelecionados;
+        toolbar.setSubtitle(totalSelecionados + " de " + total + " selecionados");
     }
 
     @Override
