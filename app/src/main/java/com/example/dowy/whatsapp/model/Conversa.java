@@ -11,17 +11,22 @@ public class Conversa implements Serializable {
     private String idDestinatario;
     private String ultimaMensagem;
     private Usuario usuarioExibicao;
+    private String isGroup;
+    private Grupo grupo;
+
+
 
     public Conversa() {
+        this.setIsGroup("false");
     }
 
-    public void salvar(){
-         DatabaseReference database = ConfiguracaoFirebase.getFirebaseDatabase();
-         DatabaseReference conversaRef = database.child("conversas");
+    public void salvar() {
+        DatabaseReference database = ConfiguracaoFirebase.getFirebaseDatabase();
+        DatabaseReference conversaRef = database.child("conversas");
 
-         conversaRef.child(idRemetente)
-                 .child(idDestinatario)
-                 .setValue(this);
+        conversaRef.child(idRemetente)
+                .child(idDestinatario)
+                .setValue(this);
     }
 
     public String getIdRemetente() {
@@ -54,5 +59,21 @@ public class Conversa implements Serializable {
 
     public void setUsuarioExibicao(Usuario usuarioExibicao) {
         this.usuarioExibicao = usuarioExibicao;
+    }
+
+    public String getIsGroup() {
+        return isGroup;
+    }
+
+    public void setIsGroup(String isGroup) {
+        this.isGroup = isGroup;
+    }
+
+    public Grupo getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(Grupo grupo) {
+        this.grupo = grupo;
     }
 }

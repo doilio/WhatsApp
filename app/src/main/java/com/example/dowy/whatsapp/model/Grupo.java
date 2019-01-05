@@ -1,7 +1,9 @@
 package com.example.dowy.whatsapp.model;
 
 import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
+import com.example.dowy.whatsapp.helper.Base64Custom;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
 import java.util.List;
@@ -21,6 +23,33 @@ public class Grupo implements Serializable {
         String idGrupoFirebase = grupoRef.push().getKey();
         setId(idGrupoFirebase);
     }
+
+    public void salvar() {
+
+        DatabaseReference database = ConfiguracaoFirebase.getFirebaseDatabase();
+        DatabaseReference grupoRef = database.child("grupos");
+
+        grupoRef.child(getId()).setValue(this);
+
+        // Salvar Conversa para membros do grupo
+        for (Usuario membro : getMembros()) {
+
+            String idRemetente = Base64Custom.codificarBase64(membro.getEmail());
+            String idDestinatario = getId();
+
+
+            Conversa conversa = new Conversa();
+            conversa.setIdRemetente(idRemetente);
+            conversa.setIdDestinatario(idDestinatario);
+            conversa.setUltimaMensagem("");
+            conversa.setIsGroup("true");
+            conversa.setGrupo(this);
+
+            conversa.salvar();
+        }
+
+    }
+
 
     public String getId() {
         return id;
