@@ -1,7 +1,12 @@
 package com.example.dowy.whatsapp.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,13 +16,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dowy.whatsapp.R;
 import com.example.dowy.whatsapp.adapter.GrupoSelecionadoAdapter;
+import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
+import com.example.dowy.whatsapp.model.Grupo;
 import com.example.dowy.whatsapp.model.Usuario;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CadastroGrupoActivity extends AppCompatActivity {
 
@@ -25,6 +42,11 @@ public class CadastroGrupoActivity extends AppCompatActivity {
     private TextView textTotalParticipantes;
     private RecyclerView recyclerMembrosSelecionados;
     private GrupoSelecionadoAdapter grupoSelecionadoAdapter;
+    private CircleImageView imageGrupo;
+    private static final int SELECAO_GALERIA = 200;
+    private StorageReference storageReference;
+    private Grupo grupo;
+    private FloatingActionButton salvarGrupo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,15 +60,24 @@ public class CadastroGrupoActivity extends AppCompatActivity {
         // Configuracoes iniciais
         textTotalParticipantes = findViewById(R.id.textTotalParticipantes);
         recyclerMembrosSelecionados = findViewById(R.id.recyclerMembrosGrupo);
+        imageGrupo = findViewById(R.id.imageGrupo);
+        grupo = new Grupo();
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        storageReference = ConfiguracaoFirebase.getFirebaseStorage();
+
+        // Configurar evento de clique na imagem
+
+        imageGrupo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                if (i.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(i, SELECAO_GALERIA);
+                }
             }
         });
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Recuperar Lista de membros passada
@@ -70,4 +101,60 @@ public class CadastroGrupoActivity extends AppCompatActivity {
         recyclerMembrosSelecionados.setAdapter(grupoSelecionadoAdapter);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SELECAO_GALERIA && resultCode == RESULT_OK) {
+            Bitmap imagem = null;
+
+            try {
+                Uri localImagemSelecionada = data.getData();
+                imagem = MediaStore.Images.Media.getBitmap(getContentResolver(), localImagemSelecionada);
+
+                if (imagem != null) {
+                    imageGrupo.setImageBitmap(imagem);
+
+                    // Recuperar Dados da imagem
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    imagem.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+                    byte[] dadosImagem = baos.toByteArray();
+
+                    // Salvar no Firebase
+                    final StorageReference imagemRef = storageReference
+                            .child("imagens")
+                            .child("grupos")
+                            .child(grupo.getId() + ".jpeg");
+
+                    UploadTask uploadTask = imagemRef.putBytes(dadosImagem);
+                    uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                        @Override
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if (!task.isSuccessful()) {
+                                throw task.getException();
+                            }
+
+                            //Continue with task to get the Download Url
+                            return imagemRef.getDownloadUrl();
+                        }
+                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(), "Sucesso ao fazer Upload", Toast.LENGTH_SHORT).show();
+                                Uri downloadUrl = task.getResult();
+                                grupo.setFoto(downloadUrl.toString());
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Erro ao fazer Upload", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
 }
