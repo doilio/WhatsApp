@@ -29,6 +29,10 @@ public class ConversasAdapter extends RecyclerView.Adapter<ConversasAdapter.MyVi
         this.listaConversa = lista;
     }
 
+    public List<Conversa> getConversas() {
+        return this.listaConversa;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         private CircleImageView imagem;
@@ -61,6 +65,7 @@ public class ConversasAdapter extends RecyclerView.Adapter<ConversasAdapter.MyVi
 
             Grupo grupo = conversaCorrente.getGrupo();
             myViewHolder.nome.setText(grupo.getNome());
+
             if (grupo.getFoto() != null) {
                 Uri fotoUrl = Uri.parse(grupo.getFoto());
 
@@ -71,13 +76,15 @@ public class ConversasAdapter extends RecyclerView.Adapter<ConversasAdapter.MyVi
 
         } else {
             Usuario usuario = conversaCorrente.getUsuarioExibicao();
-            myViewHolder.nome.setText(usuario.getNome());
-            if (usuario.getFoto() != null) {
-                Uri fotoUrl = Uri.parse(usuario.getFoto());
+            if (usuario != null) {
+                myViewHolder.nome.setText(usuario.getNome());
+                if (usuario.getFoto() != null) {
+                    Uri fotoUrl = Uri.parse(usuario.getFoto());
 
-                Glide.with(context).load(fotoUrl).into(myViewHolder.imagem);
-            } else {
-                myViewHolder.imagem.setImageResource(R.drawable.padrao);
+                    Glide.with(context).load(fotoUrl).into(myViewHolder.imagem);
+                } else {
+                    myViewHolder.imagem.setImageResource(R.drawable.padrao);
+                }
             }
 
 

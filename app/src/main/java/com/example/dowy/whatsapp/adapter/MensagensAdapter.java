@@ -35,9 +35,11 @@ public class MensagensAdapter extends RecyclerView.Adapter<MensagensAdapter.MyVi
 
         private TextView mensagem;
         private ImageView imagem;
+        private TextView nome;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            nome = itemView.findViewById(R.id.textNomeExibicao);
             mensagem = itemView.findViewById(R.id.textMensagemTexto);
             imagem = itemView.findViewById(R.id.imageMensagemFoto);
         }
@@ -68,11 +70,26 @@ public class MensagensAdapter extends RecyclerView.Adapter<MensagensAdapter.MyVi
             Uri url = Uri.parse(mensagem.getImagem());
             Glide.with(context).load(url).into(myViewHolder.imagem);
 
+            String nome = mensagem.getNome();
+            if (!nome.isEmpty()) {
+                myViewHolder.nome.setText(nome);
+            } else {
+                myViewHolder.nome.setVisibility(View.GONE);
+            }
+
             //Esconder Texto
             myViewHolder.mensagem.setVisibility(View.GONE);
-        }else{
+        } else {
 
             myViewHolder.mensagem.setText(mensagem.getMensagem());
+
+            String nome = mensagem.getNome();
+            if (!nome.isEmpty()) {
+                myViewHolder.nome.setText(nome);
+            } else {
+                myViewHolder.nome.setVisibility(View.GONE);
+            }
+
             //Esconder Imagem
             myViewHolder.imagem.setVisibility(View.GONE);
         }

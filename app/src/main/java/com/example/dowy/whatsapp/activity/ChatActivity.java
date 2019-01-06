@@ -50,6 +50,8 @@ public class ChatActivity extends AppCompatActivity {
     private TextView textViewNome;
     private CircleImageView circleImageViewFoto;
     private Usuario usuarioDestinatario;
+
+    Usuario usuarioRemetente;
     private EditText editMensagem;
     private DatabaseReference database;
     private StorageReference storage;
@@ -98,6 +100,7 @@ public class ChatActivity extends AppCompatActivity {
 
         // Recuperar remetente
         idUsuarioRemetente = UsuarioFirebase.getIdentificadorUsuario();
+        usuarioRemetente = UsuarioFirebase.getDadosUsuarioLogado();
 
 
         //Dados do usuario destinatario
@@ -167,35 +170,69 @@ public class ChatActivity extends AppCompatActivity {
 
         if (!textoMensagem.isEmpty()) {
 
-            Mensagem mensagem = new Mensagem();
-            mensagem.setIdUsuario(idUsuarioRemetente); // ID do usuario Logado
-            mensagem.setMensagem(textoMensagem);
-            //mensagem.setImagem();
+            if (usuarioDestinatario != null) {
 
-            //Salvar a mensagem para remetente
-            salvarMensagem(idUsuarioRemetente, idUsuarioDestinatario, mensagem);
+                Mensagem mensagem = new Mensagem();
+                mensagem.setIdUsuario(idUsuarioRemetente); // ID do usuario Logado
+                mensagem.setMensagem(textoMensagem);
 
-            //Salvar a mensagem para destinatario
-            salvarMensagem(idUsuarioDestinatario, idUsuarioRemetente, mensagem);
+                //Salvar a mensagem para remetente
+                salvarMensagem(idUsuarioRemetente, idUsuarioDestinatario, mensagem);
 
-            //Salvar conversa
-            salvarConversa(mensagem);
+                //Salvar a mensagem para destinatario
+                salvarMensagem(idUsuarioDestinatario, idUsuarioRemetente, mensagem);
+
+                //Salvar conversa remetente
+                salvarConversa(idUsuarioRemetente, idUsuarioDestinatario, usuarioDestinatario, mensagem, false);
+                //Salvar a conversa destinatario
+                salvarConversa(idUsuarioDestinatario, idUsuarioRemetente, usuarioRemetente, mensagem, false);
+            } else {
+
+                for (Usuario membro : grupo.getMembros()) {
+                    String idRemetenteGrupo = Base64Custom.codificarBase64(membro.getEmail());
+                    String idUsuarioLogadoGrupo = UsuarioFirebase.getIdentificadorUsuario();
+
+                    Mensagem mensagem = new Mensagem();
+
+                    mensagem.setIdUsuario(idUsuarioLogadoGrupo);
+                    mensagem.setMensagem(textoMensagem);
+                    mensagem.setNome(usuarioRemetente.getNome());
+
+                    //salvar mensagem para o membro
+                    salvarMensagem(idRemetenteGrupo, idUsuarioDestinatario, mensagem);
+
+                    //Salvar conversa
+                    salvarConversa(idRemetenteGrupo, idUsuarioDestinatario, usuarioDestinatario, mensagem, true);
+
+
+                }
+            }
+
 
         } else {
             Toast.makeText(ChatActivity.this, "Digite uma mensagem para enviar!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void salvarConversa(Mensagem msg) {
+    private void salvarConversa(String idRemetente, String idDestinatario, Usuario usuarioExibicao, Mensagem msg, boolean isGroup) {
 
         Conversa conversaRemetente = new Conversa();
-        conversaRemetente.setIdRemetente(idUsuarioRemetente);
-        conversaRemetente.setIdDestinatario(idUsuarioDestinatario);
+        conversaRemetente.setIdRemetente(idRemetente);
+        conversaRemetente.setIdDestinatario(idDestinatario);
         conversaRemetente.setUltimaMensagem(msg.getMensagem());
-        conversaRemetente.setUsuarioExibicao(usuarioDestinatario);
+
+        if (isGroup) {
+            // Conversa de Grupo
+            conversaRemetente.setIsGroup("true");
+            conversaRemetente.setGrupo(grupo);
+        } else {
+            // Conversa Normal
+
+            conversaRemetente.setUsuarioExibicao(usuarioExibicao);
+            conversaRemetente.setIsGroup("false");
+        }
 
         conversaRemetente.salvar();
-
     }
 
     private void salvarMensagem(String idRemetente, String idDestinatario, Mensagem mensagem) {

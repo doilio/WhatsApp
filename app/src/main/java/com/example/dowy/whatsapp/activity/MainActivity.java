@@ -113,10 +113,35 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 //Log.d("evento", "onQueryTextChange");
-                ConversasFragment fragment = (ConversasFragment) adapter.getPage(0);
-                if (newText != null && !newText.isEmpty()) {
-                    fragment.pesquisarConversa(newText.toLowerCase());
+
+                /**
+                 * Verifica se esta pesquisanfo Conversas ou Contactos
+                 * a partir da Tab seleccionada
+                 */
+                switch (viewPager.getCurrentItem()) {
+                    case 0:
+                        ConversasFragment conversasFragment = (ConversasFragment) adapter.getPage(0);
+
+                        if (newText != null && !newText.isEmpty()) {
+                            conversasFragment.pesquisarConversa(newText.toLowerCase());
+                        } else {
+                            conversasFragment.recarregarConversas();
+                        }
+                        break;
+                    case 1:
+                        ContactosFragment contactosFragment = (ContactosFragment) adapter.getPage(1);
+
+                        if (newText != null && !newText.isEmpty()) {
+                            contactosFragment.pesquisarContactos(newText.toLowerCase());
+                        } else {
+                            contactosFragment.recarregarContactos();
+                        }
+                        break;
+                    default:
+                        break;
                 }
+
+
                 return true;
             }
 

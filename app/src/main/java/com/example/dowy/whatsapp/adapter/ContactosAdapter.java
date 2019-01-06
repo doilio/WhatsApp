@@ -27,6 +27,10 @@ public class ContactosAdapter extends RecyclerView.Adapter<ContactosAdapter.MyVi
         this.contexto = contexto;
     }
 
+    public List<Usuario> getContactos() {
+        return this.listaContactos;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private CircleImageView mFoto;
         private TextView mNome;

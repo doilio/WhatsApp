@@ -17,9 +17,11 @@ import com.example.dowy.whatsapp.R;
 import com.example.dowy.whatsapp.activity.ChatActivity;
 import com.example.dowy.whatsapp.activity.GrupoActivity;
 import com.example.dowy.whatsapp.adapter.ContactosAdapter;
+import com.example.dowy.whatsapp.adapter.ConversasAdapter;
 import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
 import com.example.dowy.whatsapp.helper.RecyclerItemClickListener;
 import com.example.dowy.whatsapp.helper.UsuarioFirebase;
+import com.example.dowy.whatsapp.model.Conversa;
 import com.example.dowy.whatsapp.model.Usuario;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,8 +72,9 @@ public class ContactosFragment extends Fragment {
         recyclerViewListaContactos.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerViewListaContactos, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-
-                Usuario usuarioSelecionado = listaContactos.get(position);
+                // Para melhor usar o searchview no Fragmento de Contactos
+                List<Usuario> listaUsuariosActualizada = adapter.getContactos();
+                Usuario usuarioSelecionado = listaUsuariosActualizada.get(position);
                 boolean cabecalho = usuarioSelecionado.getEmail().isEmpty();
                 if (cabecalho) {
                     Intent i = new Intent(getActivity(), GrupoActivity.class);
@@ -138,6 +142,28 @@ public class ContactosFragment extends Fragment {
 
             }
         });
+    }
+
+    public void pesquisarContactos(String texto) {
+        List<Usuario> listaContactosBusca = new ArrayList<>();
+        for (Usuario usuario : listaContactos) {
+
+            String nome = usuario.getNome().toLowerCase();
+            if (nome.contains(texto)) {
+                listaContactosBusca.add(usuario);
+            }
+        }
+
+        adapter = new ContactosAdapter(listaContactos, getActivity());
+        recyclerViewListaContactos.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+    }
+
+    public void recarregarContactos() {
+        adapter = new ContactosAdapter(listaContactos, getActivity());
+        recyclerViewListaContactos.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
 }
