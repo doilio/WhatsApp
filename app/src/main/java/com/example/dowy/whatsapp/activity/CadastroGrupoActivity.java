@@ -119,7 +119,11 @@ public class CadastroGrupoActivity extends AppCompatActivity {
                 // Gravar os dados no Firebase
                 grupo.salvar();
 
+                //Encerrar a tela de criacao de Grupo e abrir a tela de Chat
 
+                Intent i = new Intent(CadastroGrupoActivity.this, ChatActivity.class);
+                i.putExtra("chatGrupo", grupo);
+                startActivity(i);
 
             }
         });

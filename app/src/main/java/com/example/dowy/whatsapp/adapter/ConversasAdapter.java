@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.dowy.whatsapp.R;
 import com.example.dowy.whatsapp.model.Conversa;
+import com.example.dowy.whatsapp.model.Grupo;
 import com.example.dowy.whatsapp.model.Usuario;
 
 import java.util.List;
@@ -54,20 +55,33 @@ public class ConversasAdapter extends RecyclerView.Adapter<ConversasAdapter.MyVi
     public void onBindViewHolder(@NonNull ConversasAdapter.MyViewHolder myViewHolder, int i) {
 
         Conversa conversaCorrente = listaConversa.get(i);
-
-        Usuario usuario = conversaCorrente.getUsuarioExibicao();
-
-        myViewHolder.nome.setText(usuario.getNome());
         myViewHolder.ultimaMensagem.setText(conversaCorrente.getUltimaMensagem());
 
-        if (usuario.getFoto() != null) {
-            Uri fotoUrl = Uri.parse(usuario.getFoto());
+        if (conversaCorrente.getIsGroup().equals("true")) {
 
-            Glide.with(context).load(fotoUrl).into(myViewHolder.imagem);
+            Grupo grupo = conversaCorrente.getGrupo();
+            myViewHolder.nome.setText(grupo.getNome());
+            if (grupo.getFoto() != null) {
+                Uri fotoUrl = Uri.parse(grupo.getFoto());
+
+                Glide.with(context).load(fotoUrl).into(myViewHolder.imagem);
+            } else {
+                myViewHolder.imagem.setImageResource(R.drawable.padrao);
+            }
+
         } else {
-            myViewHolder.imagem.setImageResource(R.drawable.padrao);
-        }
+            Usuario usuario = conversaCorrente.getUsuarioExibicao();
+            myViewHolder.nome.setText(usuario.getNome());
+            if (usuario.getFoto() != null) {
+                Uri fotoUrl = Uri.parse(usuario.getFoto());
 
+                Glide.with(context).load(fotoUrl).into(myViewHolder.imagem);
+            } else {
+                myViewHolder.imagem.setImageResource(R.drawable.padrao);
+            }
+
+
+        }
 
     }
 

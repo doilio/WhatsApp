@@ -24,6 +24,7 @@ import com.example.dowy.whatsapp.config.ConfiguracaoFirebase;
 import com.example.dowy.whatsapp.helper.Base64Custom;
 import com.example.dowy.whatsapp.helper.UsuarioFirebase;
 import com.example.dowy.whatsapp.model.Conversa;
+import com.example.dowy.whatsapp.model.Grupo;
 import com.example.dowy.whatsapp.model.Mensagem;
 import com.example.dowy.whatsapp.model.Usuario;
 import com.google.android.gms.tasks.Continuation;
@@ -55,6 +56,7 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference mensagensRef;
     private ChildEventListener childEventListenerMensagens;
     private ImageView imageCamera;
+    private Grupo grupo;
 
     // ID dos Usuarios
     private String idUsuarioRemetente;
@@ -101,20 +103,43 @@ public class ChatActivity extends AppCompatActivity {
         //Dados do usuario destinatario
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            usuarioDestinatario = (Usuario) bundle.getSerializable("chatContacto");
-            textViewNome.setText(usuarioDestinatario.getNome());
-            String foto = usuarioDestinatario.getFoto();
+            if (bundle.containsKey("chatGrupo")) {
 
-            if (foto != null) {
-                Uri url = Uri.parse(foto);
-                Glide.with(ChatActivity.this).load(url).into(circleImageViewFoto);
+                grupo = (Grupo) bundle.getSerializable("chatGrupo");
+                idUsuarioDestinatario = grupo.getId();
+                textViewNome.setText(grupo.getNome());
+
+                String foto = grupo.getFoto();
+
+                if (foto != null) {
+                    Uri url = Uri.parse(foto);
+                    Glide.with(ChatActivity.this).load(url).into(circleImageViewFoto);
+
+                } else {
+                    circleImageViewFoto.setImageResource(R.drawable.padrao);
+                }
+
 
             } else {
-                circleImageViewFoto.setImageResource(R.drawable.padrao);
+                /*********/
+                usuarioDestinatario = (Usuario) bundle.getSerializable("chatContacto");
+                textViewNome.setText(usuarioDestinatario.getNome());
+                String foto = usuarioDestinatario.getFoto();
+
+                if (foto != null) {
+                    Uri url = Uri.parse(foto);
+                    Glide.with(ChatActivity.this).load(url).into(circleImageViewFoto);
+
+                } else {
+                    circleImageViewFoto.setImageResource(R.drawable.padrao);
+                }
+
+                //Recuperar destinatario
+                idUsuarioDestinatario = Base64Custom.codificarBase64(usuarioDestinatario.getEmail());
+
+                /*********/
             }
 
-            //Recuperar destinatario
-            idUsuarioDestinatario = Base64Custom.codificarBase64(usuarioDestinatario.getEmail());
         }
 
 
