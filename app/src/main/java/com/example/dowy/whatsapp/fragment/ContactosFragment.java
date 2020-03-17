@@ -72,10 +72,12 @@ public class ContactosFragment extends Fragment {
         recyclerViewListaContactos.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerViewListaContactos, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+
                 // Para melhor usar o searchview no Fragmento de Contactos
                 List<Usuario> listaUsuariosActualizada = adapter.getContactos();
                 Usuario usuarioSelecionado = listaUsuariosActualizada.get(position);
                 boolean cabecalho = usuarioSelecionado.getEmail().isEmpty();
+
                 if (cabecalho) {
                     Intent i = new Intent(getActivity(), GrupoActivity.class);
                     startActivity(i);
