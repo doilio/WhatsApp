@@ -41,6 +41,7 @@ I figured it would've been a lot easier to implement E-mail and Password Authent
 
 ## Built With
 
+* [Android Support Library](https://developer.android.com/topic/libraries/support-library) - A set of classes and methods that closely resemble APIs in the Android Framework. 
 * [Java](https://www.java.com/) - A general-purpose programming language that is class-based, object-oriented, and designed to have as few implementation dependencies as possible. 
 * [Firebase](https://firebase.google.com/) - Firebase mobile and web application development platform. 
 * [Circle Image View](https://github.com/hdodenhof/CircleImageView) - A fast circular ImageView perfect for profile images.
